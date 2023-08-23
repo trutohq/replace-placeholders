@@ -1,0 +1,65 @@
+{
+  "name": "@truto/replace-placeholders",
+  "version": "1.0.0",
+  "description": "Efficiently replace placeholders in strings, arrays, and objects using data from specified paths. Powered by 'wild-wild-path' and 'lodash' for robust functionality.",
+  "repository": "https://github.com/trutohq/replace-placeholders.git",
+  "dependencies": {
+    "wild-wild-path": "4.0.0",
+    "lodash-es": "4.17.21",
+    "traverse": "0.6.7"
+  },
+  "source": "index.ts",
+  "main": "dist/main.cjs",
+  "module": "dist/module.js",
+  "types": "dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "require": "./dist/main.cjs",
+      "import": "./dist/module.js"
+    }
+  },
+  "targets": {
+    "main": {
+      "isLibrary": true
+    },
+    "module": {
+      "isLibrary": true
+    }
+  },
+  "type": "module",
+  "license": "MIT",
+  "volta": {
+    "node": "18.13.0",
+    "yarn": "1.22.19"
+  },
+  "devDependencies": {
+    "@parcel/packager-ts": "2.8.3",
+    "@parcel/transformer-typescript-types": "2.8.3",
+    "@types/lodash-es": "4.17.7",
+    "@types/traverse": "0.6.32",
+    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/parser": "5.46.1",
+    "eslint": "8.29.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-prettier": "4.2.1",
+    "parcel": "2.8.3",
+    "prettier": "2.8.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.9.5",
+    "vitest": "0.34.2"
+  },
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "parcel watch",
+    "build": "rm -rf dist && parcel build",
+    "check": "tsc --noEmit",
+    "prepublishOnly": "yarn build",
+    "test": "vitest"
+  }
+}
