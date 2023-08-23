@@ -15,8 +15,8 @@ npm install @truto/replace-placeholders
 ```javascript
 import replacePlaceholders from '@truto/replace-placeholders';
 
-const result = replacePlaceholders('{{foo}}', { foo: 'bar' });
-console.log(result);  // Outputs: 'bar'
+const result = replacePlaceholders('Foo: {{foo}}', { foo: 'bar' });
+console.log(result);  // Outputs: 'Foo: bar'
 ```
 
 ### Advanced Usage with Different Data Types
@@ -32,7 +32,7 @@ console.log(replacePlaceholders('{{foo}} {{bar:bool}}', { foo: 'bar', bar: 'fals
 #### Arrays
 
 ```javascript
-console.log(replacePlaceholders(['{{foo}}'], { foo: 'bar' }));  // Outputs: ['bar']
+console.log(replacePlaceholders(['Foo: {{foo}}'], { foo: 'bar' }));  // Outputs: ['Foo: bar']
 console.log(replacePlaceholders(['{{foo}}', '{{bar:num}}'], { foo: 'bar', bar: '1.34' }));  // Outputs: ['bar', 1.34]
 ```
 
@@ -51,7 +51,6 @@ console.log(replacePlaceholders('{{foo:num}}', { foo: '1.1' }));  // Outputs: 1.
 console.log(replacePlaceholders('{{foo:bool}}', { foo: 'true' }));  // Outputs: true
 console.log(replacePlaceholders('{{foo:json}}', { foo: '{"foo":"bar"}' }));  // Outputs: { foo: 'bar' }
 console.log(replacePlaceholders('{{foo:null}}', { foo: 'null' }));  // Outputs: null
-// ... add other examples ...
 ```
 
 ### Conditional Replacements (Fallback Values)
