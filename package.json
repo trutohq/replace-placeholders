@@ -40,7 +40,7 @@
     "@parcel/transformer-typescript-types": "2.8.3",
     "@types/lodash-es": "4.17.7",
     "@types/traverse": "0.6.32",
-    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/eslint-plugin": "5.62.0",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",
     "eslint-config-prettier": "8.5.0",
