@@ -359,6 +359,13 @@
     "@parcel/utils" "2.8.3"
     lmdb "2.5.2"
 
+"@parcel/codeframe@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/codeframe/-/codeframe-2.13.1.tgz#12c7c373e2f60fd7adcb95e64def81216a29e781"
+  integrity sha512-CTtHH6Q7+B3goMTcPqopDHXOYkhdZNpRAlzAs1GUaWEDfUYzu3TgXScd4FAz61pOp2HZeDYeRbgvAUPsH1/9Ng==
+  dependencies:
+    chalk "^4.1.2"
+
 "@parcel/codeframe@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/codeframe/-/codeframe-2.8.3.tgz#84fb529ef70def7f5bc64f6c59b18d24826f5fcc"
@@ -439,6 +446,14 @@
     nullthrows "^1.1.1"
     semver "^5.7.1"
 
+"@parcel/diagnostic@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/diagnostic/-/diagnostic-2.13.1.tgz#0075cadce5fa33da9faea1d2620469cfb4ee2994"
+  integrity sha512-1uwmipR59yPdx3jDF48IbhYruXO37Evcb3vM7bRCaPK6e3JjALjnLTeQaBI3iYaNPUzw8wYrtlC8vS3Iq+eahg==
+  dependencies:
+    "@mischnic/json-sourcemap" "^0.1.0"
+    nullthrows "^1.1.1"
+
 "@parcel/diagnostic@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/diagnostic/-/diagnostic-2.8.3.tgz#d560276d5d2804b48beafa1feaf3fc6b2ac5e39d"
@@ -447,10 +462,20 @@
     "@mischnic/json-sourcemap" "^0.1.0"
     nullthrows "^1.1.1"
 
+"@parcel/events@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/events/-/events-2.13.1.tgz#f75ac4301963d0a507481a791c11f8e66161e518"
+  integrity sha512-welKWzNOWEuILgs6w67zB1+aX6UB/6wIHnc37fCNXpBo1JQGsmyrndJMLcmiZSenB7IbqlYxdfQ2w7vvl/KOrw==
+
 "@parcel/events@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/events/-/events-2.8.3.tgz#205f8d874e6ecc2cbdb941bf8d54bae669e571af"
   integrity sha512-hoIS4tAxWp8FJk3628bsgKxEvR7bq2scCVYHSqZ4fTi/s0+VymEATrRCUqf+12e5H47uw1/ZjoqrGtBI02pz4w==
+
+"@parcel/feature-flags@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/feature-flags/-/feature-flags-2.13.1.tgz#afee9db5b197a2c7d1171553b039e1000f4c6020"
+  integrity sha512-7+/aI/7MP8aWX2Zm4eL+izYG2v8piIDgdTtZn5q7fHzot6rzdYrVsMg+RpaskWnB8YWEoITwt3ma8cp66o54lA==
 
 "@parcel/fs-search@2.8.3":
   version "2.8.3"
@@ -485,6 +510,14 @@
     detect-libc "^1.0.3"
     xxhash-wasm "^0.4.2"
 
+"@parcel/logger@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/logger/-/logger-2.13.1.tgz#b535001c9ae913f8314fc52d97315ca43f232468"
+  integrity sha512-0Nh3iXMvBpNrPdDz8KbTPIdd2thaVUz76dRtvxwAO20jCKEWInxRvcRYWqcYEfq2Iq3GeaXJAXhuLOkeI56iVA==
+  dependencies:
+    "@parcel/diagnostic" "2.13.1"
+    "@parcel/events" "2.13.1"
+
 "@parcel/logger@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/logger/-/logger-2.8.3.tgz#e14e4debafb3ca9e87c07c06780f9afc38b2712c"
@@ -492,6 +525,13 @@
   dependencies:
     "@parcel/diagnostic" "2.8.3"
     "@parcel/events" "2.8.3"
+
+"@parcel/markdown-ansi@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/markdown-ansi/-/markdown-ansi-2.13.1.tgz#cd480771e20fd2655e76413daf1cbb50ac6f0746"
+  integrity sha512-1nsgyQg1n2nUxXS1bvUkA5wzEfqb/qLwgwCGMwzSlJZPrG23YWKvXHLyB2wRFV1RTZ7uKHaCfbG45pY+LE0UIA==
+  dependencies:
+    chalk "^4.1.2"
 
 "@parcel/markdown-ansi@2.8.3":
   version "2.8.3"
@@ -640,12 +680,19 @@
     "@parcel/utils" "2.8.3"
     posthtml "^0.16.4"
 
-"@parcel/packager-ts@2.8.3":
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/@parcel/packager-ts/-/packager-ts-2.8.3.tgz#49884b52e1a91c8265831fab4e8cf3a247fe69ca"
-  integrity sha512-8JooYHjKntHnQywLT7LAnfoGiAQ1fUu0N2DtuM0PxpgQqYJ4KE9TZS+SZq7hpe24cZkD0A4A+1kBlYAyvuanrg==
+"@parcel/packager-ts@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/packager-ts/-/packager-ts-2.13.1.tgz#cfc6d433d1f2f353acb393779044dbd270f5fc3e"
+  integrity sha512-u0n3E0WoYKfPubXD4mGWKlp5ED/GQPGiJcvEnNM809ENe/4NoONW8V28nB6uNJ3w3Oz46GheMNuVlDkIrh45SQ==
   dependencies:
-    "@parcel/plugin" "2.8.3"
+    "@parcel/plugin" "2.13.1"
+
+"@parcel/plugin@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/plugin/-/plugin-2.13.1.tgz#ad50dcae0cdfe08d7abb7553e2c75a5b55c333d6"
+  integrity sha512-bagkxPnZlLDsWjPICdfurZixaWD9bAfta2jbSSkK0ng+qXc+p+tq2d8SIgtFbv5tURHBiWDCTNDmM1KhYAKZGA==
+  dependencies:
+    "@parcel/types" "2.13.1"
 
 "@parcel/plugin@2.8.3":
   version "2.8.3"
@@ -653,6 +700,16 @@
   integrity sha512-jZ6mnsS4D9X9GaNnvrixDQwlUQJCohDX2hGyM0U0bY2NWU8Km97SjtoCpWjq+XBCx/gpC4g58+fk9VQeZq2vlw==
   dependencies:
     "@parcel/types" "2.8.3"
+
+"@parcel/profiler@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/profiler/-/profiler-2.13.1.tgz#c29542e29f5e44c78a97fdd6be47386f6b01c5f0"
+  integrity sha512-6K6N9RGIg/d4t+htiTqNV0DMWr/UgdDQ10ilc/ZsgclqPj/FBYJ5xhxyHDpeJYRdgJ3ob6pyGS60KuiqIWxi3g==
+  dependencies:
+    "@parcel/diagnostic" "2.13.1"
+    "@parcel/events" "2.13.1"
+    "@parcel/types-internal" "2.13.1"
+    chrome-trace-event "^1.0.2"
 
 "@parcel/reporter-cli@2.8.3":
   version "2.8.3"
@@ -716,6 +773,11 @@
     "@parcel/plugin" "2.8.3"
     "@parcel/utils" "2.8.3"
     nullthrows "^1.1.1"
+
+"@parcel/rust@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/rust/-/rust-2.13.1.tgz#180f6485c3fff319cf2514a96225309aa89b38fd"
+  integrity sha512-32YgI6vLaKMD5Z8Y2aWIBIDc6qfbsUl1bQzk5/xu0CMvYsCp4FKCD0NLOFhkqF4dN5kQ/cN0tNQEJjYyJ8LDiA==
 
 "@parcel/source-map@^2.1.1":
   version "2.1.1"
@@ -877,6 +939,24 @@
   dependencies:
     nullthrows "^1.1.1"
 
+"@parcel/types-internal@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/types-internal/-/types-internal-2.13.1.tgz#fd4f32d47361e46bbd7af8fdb10ef8f085ed5ab7"
+  integrity sha512-uY5lPDsinnyuk4qbvi04sQx2Zx0oBzjFZzhbWFcH2jWAWasHukK0w0wgLVXfGfP9hvgc/TIBgugCkvLbVJR1Iw==
+  dependencies:
+    "@parcel/diagnostic" "2.13.1"
+    "@parcel/feature-flags" "2.13.1"
+    "@parcel/source-map" "^2.1.1"
+    utility-types "^3.10.0"
+
+"@parcel/types@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/types/-/types-2.13.1.tgz#cb23b201a5f815852a3eca2fe3d299be273e0e40"
+  integrity sha512-ISSKEPW+JngnPJkR0Qvx8Bi59zNT4B6uFBPvtNTOu3Tapjljv0oI+fSSV3tN3xfPs62rxCoXTu+b3nzREyBNLA==
+  dependencies:
+    "@parcel/types-internal" "2.13.1"
+    "@parcel/workers" "2.13.1"
+
 "@parcel/types@2.8.3":
   version "2.8.3"
   resolved "https://registry.yarnpkg.com/@parcel/types/-/types-2.8.3.tgz#3306bc5391b6913bd619914894b8cd84a24b30fa"
@@ -889,6 +969,20 @@
     "@parcel/source-map" "^2.1.1"
     "@parcel/workers" "2.8.3"
     utility-types "^3.10.0"
+
+"@parcel/utils@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/utils/-/utils-2.13.1.tgz#e9786fba698c0046d867370cf494def4e73dda51"
+  integrity sha512-GX/iV5owV92AfYvCCWbQURVWCDla5ExH2vPcNRqI4PG1d9SXbXJetbe0uqmeVz1MtA/F9+HBck/GP1TEa8WWcQ==
+  dependencies:
+    "@parcel/codeframe" "2.13.1"
+    "@parcel/diagnostic" "2.13.1"
+    "@parcel/logger" "2.13.1"
+    "@parcel/markdown-ansi" "2.13.1"
+    "@parcel/rust" "2.13.1"
+    "@parcel/source-map" "^2.1.1"
+    chalk "^4.1.2"
+    nullthrows "^1.1.1"
 
 "@parcel/utils@2.8.3":
   version "2.8.3"
@@ -973,6 +1067,18 @@
     "@parcel/watcher-linux-x64-musl" "2.2.0"
     "@parcel/watcher-win32-arm64" "2.2.0"
     "@parcel/watcher-win32-x64" "2.2.0"
+
+"@parcel/workers@2.13.1":
+  version "2.13.1"
+  resolved "https://registry.yarnpkg.com/@parcel/workers/-/workers-2.13.1.tgz#62c2c6b4927b90cccf25e90511d00db5ddb4ef88"
+  integrity sha512-uNIksZaiU46qZMXqN9jYTvsPx9rjO4kNwkjLind29tj7mCYXm40I2YR9TV6IY5kvtN4WLMC1dz4Hot2vwc8JBA==
+  dependencies:
+    "@parcel/diagnostic" "2.13.1"
+    "@parcel/logger" "2.13.1"
+    "@parcel/profiler" "2.13.1"
+    "@parcel/types-internal" "2.13.1"
+    "@parcel/utils" "2.13.1"
+    nullthrows "^1.1.1"
 
 "@parcel/workers@2.8.3":
   version "2.8.3"
@@ -1352,7 +1458,7 @@ chalk@^2.4.2:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
-chalk@^4.0.0, chalk@^4.1.0:
+chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-4.1.2.tgz#aac4e2b7734a740867aeb16bf02aad556a1e7a01"
   integrity sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==
