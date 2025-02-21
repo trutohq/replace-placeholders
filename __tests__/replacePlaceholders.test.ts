@@ -47,7 +47,7 @@ describe('replacePlaceholders', () => {
     it('should replace multiple placeholders', () => {
       expect(
         replacePlaceholders(
-          { foo: '{{foo}}', bar: '{{bar:int}}' },
+          { foo: '{{foo}}', bar: '{{bar:int}}', baz: '{{baz:int:undefined}}' },
           {
             foo: 'bar',
             bar: 1,

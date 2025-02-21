@@ -7,12 +7,13 @@ describe('replace', () => {
       expect(replace('foo', { foo: 'bar' })).toBe('foo')
       expect(replace('{foo}', { foo: 'bar' })).toBe('{foo}')
       expect(replace('{{foo}', { foo: 'bar' })).toBe('{{foo}')
-      expect(replace('{{foo }}', { foo: 'bar' })).toBe('{{foo }}')
+      expect(replace('{{foo }}', { foo: 'bar' })).toBe('bar')
     })
   })
   describe('single', () => {
     it('should replace a single placeholder', () => {
       expect(replace('{{foo}}', { foo: 'bar' })).toBe('bar')
+      expect(replace('{{foo.0.id}}', { foo: [{ id: 'bar' }] })).toBe('bar')
     })
     it('should replace a single placeholder with other text', () => {
       expect(replace('foo {{foo}} bar', { foo: 'bar' })).toBe('foo bar bar')
@@ -88,6 +89,9 @@ describe('replace', () => {
       })
       it('should return replaced placeholder if with other text', () => {
         expect(replace('foo {{foo:int}} bar', { foo: '1' })).toBe('foo 1 bar')
+        expect(replace('foo {{  foo   :int}} bar', { foo: '1' })).toBe(
+          'foo 1 bar'
+        )
       })
     })
     describe('num', () => {
@@ -134,6 +138,7 @@ describe('replace', () => {
         expect(replace('{{foo:json}}', { foo: { foo: 'bar' } })).toEqual({
           foo: 'bar',
         })
+        expect(replace('{{foo:json}}', { foo: ['a', 'b'] })).toEqual(['a', 'b'])
       })
       it('should return original placeholder if its not a valid json', () => {
         expect(replace('{{foo:json}}', { foo: 'blah' })).toBe('blah')
@@ -194,17 +199,95 @@ describe('replace', () => {
         )
       })
     })
+    describe('ignore-empty-str', () => {
+      it('should return the original string', () => {
+        expect(replace('{{foo:ignore-empty-str}}', { foo: '' })).toBe(
+          '{{foo:ignore-empty-str}}'
+        )
+      })
+      it('should return the original string with other text', () => {
+        expect(
+          replace('foo {{foo:ignore-empty-str}} {{bar}}', {
+            foo: '',
+            bar: 'bar',
+          })
+        ).toBe('foo {{foo:ignore-empty-str}} bar')
+      })
+      it('should return the original string if the placeholder is not found', () => {
+        expect(replace('{{foo:ignore-empty-str}}', {})).toBe(
+          '{{foo:ignore-empty-str}}'
+        )
+      })
+      it('should return the original string if placeholder contains conditions', () => {
+        expect(replace('{{foo:ignore-empty-str|bar}}', { foo: '' })).toBe(
+          '{{foo:ignore-empty-str|bar}}'
+        )
+        expect(replace('{{foo|bar:ignore-empty-str}}', { foo: '' })).toBe(
+          '{{foo|bar:ignore-empty-str}}'
+        )
+      })
+      it('should return the replaced string if the placeholder contains conditions', () => {
+        expect(
+          replace('{{foo|bar:ignore-empty-str}}', { foo: '', bar: 'bar' })
+        ).toBe('bar')
+        expect(
+          replace('{{foo|bar:ignore-empty-str}}', { foo: 'foo', bar: 'bar' })
+        ).toBe('foo')
+        expect(
+          replace('{{foo|bar:ignore-empty-str}} {{baz}}', {
+            foo: 'foo',
+            bar: 'bar',
+          })
+        ).toBe('foo {{baz}}')
+        expect(
+          replace('{{foo|bar:ignore-empty-str}} {{baz}}', {
+            foo: 'foo',
+            bar: 'bar',
+            baz: '',
+          })
+        ).toBe('foo ')
+      })
+    })
+    describe('undefined', () => {
+      it('should return the original string', () => {
+        expect(replace('{{foo:undefined}}', { foo: 'bar' })).toBe('bar')
+      })
+      it('should return the original string with other text', () => {
+        expect(replace('foo {{foo:undefined}} {{bar}}', { bar: 'bar' })).toBe(
+          'foo  bar'
+        )
+      })
+      it('should return undefined if the placeholder is not found', () => {
+        expect(replace('{{foo:undefined}}', {})).toBeUndefined()
+      })
+      it('should return undefined if placeholder contains conditions', () => {
+        expect(replace('{{foo:undefined|bar}}', {})).toBeUndefined()
+        expect(replace('{{foo|bar:undefined}}', {})).toBeUndefined()
+      })
+      it('should return the replaced string if the placeholder contains conditions', () => {
+        expect(
+          replace('{{foo|bar:undefined}}', { foo: 'foo', bar: 'bar' })
+        ).toBe('foo')
+        expect(replace('{{foo|bar:undefined}}', { foo: '', bar: 'bar' })).toBe(
+          ''
+        )
+      })
+    })
   })
   describe('or condition', () => {
     it('should return the first non-undefined value', () => {
       expect(replace('{{foo|bar}}', { foo: 'foo' })).toBe('foo')
       expect(replace('{{foo|bar}}', { bar: 'bar' })).toBe('bar')
-      expect(replace('{{foo|bar}}', { foo: 'foo', bar: 'bar' })).toBe('foo')
+      expect(replace('{{foo|bar|baz}}', { baz: 'baz' })).toBe('baz')
+      expect(
+        replace('{{foo|bar|baz}}', { foo: 'foo', bar: 'bar', baz: 'baz' })
+      ).toBe('foo')
     })
     it('should return the first non-undefined value with type cast', () => {
       expect(replace('{{foo:str|bar:str}}', { foo: 'foo' })).toBe('foo')
       expect(replace('{{foo:str|bar:int}}', { bar: 1 })).toBe(1)
       expect(replace('{{foo:int|bar:str}}', { foo: 1, bar: 'bar' })).toBe(1)
+      expect(replace('{{foo:int|bar:str}}', { baz: 1, bar: 'bar' })).toBe('bar')
       expect(replace('{{foo|bar:str}}', { foo: 1 })).toBe('1')
       expect(replace('{{foo|bar:str}}', { foo: true })).toBe('true')
       expect(replace('{{foo|bar:str}}', { foo: { foo: 'bar' } })).toBe(
@@ -212,6 +295,10 @@ describe('replace', () => {
       )
       expect(replace('{{foo:str:null|bar:str}}', { foo: null })).toBe(null)
       expect(replace('{{foo:str:null|bar:str}}', {})).toBe(null)
+      expect(replace('{{foo.a:int:null|foo:int:null}}', { foo: 1 })).toBe(1)
+      expect(
+        replace('{{foo.a:int:null|foo:int:null}}', { foo: { a: 1 } })
+      ).toBe(1)
     })
     it('should return the first non-undefined value with type cast for deep paths', () => {
       expect(replace('{{foo.bar:str|bar:str}}', { foo: { bar: 'bar' } })).toBe(
@@ -219,10 +306,10 @@ describe('replace', () => {
       )
       expect(replace('{{foo.bar:str|bar:int}}', { bar: 1 })).toBe(1)
       expect(
-        replace('{{foo.bar:int|bar.str}}', { foo: { bar: 1 }, bar: 'bar' })
+        replace('{{ foo.bar : int | bar.str}}', { foo: { bar: 1 }, bar: 'bar' })
       ).toBe(1)
-      expect(replace('{{foo.bar|bar:str}}', { foo: { bar: 1 } })).toBe('1')
-      expect(replace('{{foo.bar|bar:str}}', { foo: { bar: true } })).toBe(
+      expect(replace('{{foo.bar| bar:str}}', { foo: { bar: 1 } })).toBe('1')
+      expect(replace('{{ foo.bar | bar:str }}', { foo: { bar: true } })).toBe(
         'true'
       )
       expect(
@@ -232,6 +319,28 @@ describe('replace', () => {
         replace('{{foo.bar:str:null|bar:str}}', { foo: { bar: null } })
       ).toBe(null)
       expect(replace('{{foo.bar:str:null|bar:str}}', {})).toBe(null)
+    })
+  })
+  describe('default', () => {
+    it('should apply the default value if the placeholder is not found', () => {
+      expect(replace('{{foo?:https://quickbooks.api.intuit.com}}', {})).toBe(
+        'https://quickbooks.api.intuit.com'
+      )
+      expect(replace('{{foo:str?:bar}}', {})).toBe('bar')
+    })
+    it('should apply the default value if the placeholder is not found in conditional case', () => {
+      expect(replace('{{foo|baz:str?:bar}}', {})).toBe('bar')
+    })
+    describe('type casting', () => {
+      it('should apply the default value with type cast', () => {
+        expect(replace('{{foo ?: bar:str}}', {})).toBe(' bar')
+        expect(replace('{{foo ?: bar}}', {})).toBe(' bar')
+        expect(replace('{{foo ?:bar}}', {})).toBe('bar')
+        expect(replace('{{foo ?: 1:int}}', {})).toBe(1)
+        expect(replace('{{foo ?: false:bool}}', {})).toBe(false)
+        expect(replace('{{foo ?: true:bool}}', {})).toBe(true)
+        expect(replace('{{foo ?: 1.232:num}}', {})).toBe(1.232)
+      })
     })
   })
 })

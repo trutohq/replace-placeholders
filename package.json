@@ -1,6 +1,6 @@
 {
   "name": "@truto/replace-placeholders",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Efficiently replace placeholders in strings, arrays, and objects using data from specified paths. Powered by 'wild-wild-path' and 'lodash' for robust functionality.",
   "repository": "https://github.com/trutohq/replace-placeholders.git",
   "dependencies": {
@@ -40,6 +40,7 @@
     "@parcel/transformer-typescript-types": "2.8.3",
     "@types/lodash-es": "4.17.7",
     "@types/traverse": "0.6.32",
+    "@cloudflare/workers-types": "4.20250214.0",
     "@typescript-eslint/eslint-plugin": "5.46.1",
     "@typescript-eslint/parser": "5.46.1",
     "eslint": "8.29.0",

@@ -1,5 +1,5 @@
 import traverse from 'traverse'
-import { isString, isArray, isPlainObject } from 'lodash-es'
+import { isString, isArray, isPlainObject, isArrayBuffer, get } from 'lodash-es'
 import replace from './replace'
 export default function replacePlaceholders<T>(
   obj: T extends string | string[] | Record<string, unknown> ? T : never,
@@ -19,6 +19,10 @@ export default function replacePlaceholders<T>(
         this.remove()
       } else if (isString(value)) {
         this.update(replace(value, context))
+      } else if (isArrayBuffer(value) || value instanceof Blob) {
+        const val = get(obj, this.path)
+        this.update(val)
+        this.block()
       }
     })
   }
