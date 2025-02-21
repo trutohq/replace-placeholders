@@ -27,6 +27,7 @@ console.log(result);  // Outputs: 'Foo: bar'
 console.log(replacePlaceholders('{{foo}}', { foo: 'bar' }));  // Outputs: 'bar'
 console.log(replacePlaceholders('{{foo-bar.something}}', { 'foo-bar': { something: true } }));  // Outputs: 'true'
 console.log(replacePlaceholders('{{foo}} {{bar:bool}}', { foo: 'bar', bar: 'false' }));  // Outputs: 'bar false'
+console.log(replacePlaceholders('{{foo.0.bar}}', { foo: [{ bar: 'baz' }] }));  // Outputs: 'baz'
 ```
 
 #### Arrays
@@ -45,12 +46,34 @@ console.log(replacePlaceholders({ foo: '{{foo}}', bar: '{{bar:int}}' }, { foo: '
 
 ### Conversion Types
 
+You can coerce values to specific types. 
+
+**Only works when the placeholder is the complete string.**
+
 ```javascript
 console.log(replacePlaceholders('{{foo:int}}', { foo: '1' }));  // Outputs: 1
 console.log(replacePlaceholders('{{foo:num}}', { foo: '1.1' }));  // Outputs: 1.1
 console.log(replacePlaceholders('{{foo:bool}}', { foo: 'true' }));  // Outputs: true
 console.log(replacePlaceholders('{{foo:json}}', { foo: '{"foo":"bar"}' }));  // Outputs: { foo: 'bar' }
+console.log(replacePlaceholders('{{foo:json}}', { foo: { foo: 'bar' } }));  // Outputs: { foo: 'bar' }
 console.log(replacePlaceholders('{{foo:null}}', { foo: 'null' }));  // Outputs: null
+```
+
+### Remove empty placeholders
+
+You can use `undefined` keyword to remove placeholders that are not found in the data object.
+
+```javascript
+console.log(replacePlaceholders('foo {{foo:undefined}} {{bar}}', { bar: 'bar' }));  // Outputs: 'foo  bar'
+```
+
+### Ignoring empty strings
+
+You can use `ignore-empty-str` keyword to ignore empty strings in the output. Useful when used with conditional replacements below.
+
+```javascript
+console.log(replacePlaceholders('foo {{foo:ignore-empty-str}} {{bar}}', { foo: '', bar: 'bar' })) // Outputs: 'foo {{foo:ignore-empty-str}} bar'
+console.lo(replacePlaceholders('{{foo|bar:ignore-empty-str}}', { foo: '', bar: 'bar' })) // Outputs: 'bar'
 ```
 
 ### Conditional Replacements (Fallback Values)
@@ -63,6 +86,20 @@ console.log(replacePlaceholders('{{foo:str|bar:int}}', { bar: 1 }));  // Outputs
 console.log(replacePlaceholders('{{foo.bar:str|bar:str}}', { foo: { bar: 'bar' } }));  // Outputs: 'bar'
 console.log(replacePlaceholders('{{foo.bar|bar:str}}', { foo: { bar: true } }));  // Outputs: 'true'
 ```
+
+### Default values
+
+Using the Elvis operator `?:`, you can provide default values for placeholders that are not found in the data object.
+
+```javascript
+console.log(replacePlaceholders('{{foo?:bar}}', { bar: 'bar' }));  // Outputs: 'bar'
+````
+
+You can also combine it with type casting
+
+```javascript
+console.log(replacePlaceholders('{{foo?:1:int}}', { foo: '1' }));  // Outputs: 1
+````
 
 ## License
 

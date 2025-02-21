@@ -1,5 +1,5 @@
 import { get as getWild } from 'wild-wild-path'
-import { isPlainObject } from 'lodash-es'
+import { isArray, isPlainObject, isString, toString, trim } from 'lodash-es'
 
 function replace(
   str = '',
@@ -12,29 +12,50 @@ function replace(
   | null
   | undefined
   | unknown {
-  const regex = /{{([\w-.|:]+)}}/gi
+  const regex = /{{([\w-./|:?\s]+)}}/gi
+  const typeSplitRegex = /:(?=[\w\s]+)/gm
   const matches = str.match(regex)
   let result: string | any = str
 
   if (matches) {
     matches.forEach(match => {
-      const parts = match.slice(2, -2).split('|')
+      const [matchStr, defaultStr] = match.slice(2, -2).split('?:')
+      const parts = matchStr.split('|')
       const isNullAllowed = parts.some(part => part.includes(':null'))
+      const ignoreEmptyString = parts.some(part =>
+        part.includes(':ignore-empty-str')
+      )
+      const setUndefined = parts.some(part => part.includes(':undefined'))
+
+      const isWholeString = match === str
 
       let value: any = undefined
       for (const part of parts) {
-        const [path, ...typeParts] = part.split(':')
-        const type: string = typeParts[0] || 'str'
+        const [path, ...typeParts] = part.split(typeSplitRegex)
+        const type: string = (typeParts[0] || 'str').trim()
 
         const tempValue = getWild(obj, path.trim())
+        if (tempValue === '' && ignoreEmptyString) {
+          continue
+        }
         if (tempValue !== undefined) {
-          value = typeCast(tempValue, type, match === str)
+          value = typeCast(tempValue, type, isWholeString)
           break
         }
       }
 
-      if (value === undefined) {
-        if (isNullAllowed) {
+      if (value === undefined && defaultStr) {
+        const [defaultValue, defaultType] = defaultStr.split(typeSplitRegex)
+        const type = defaultType || 'str'
+        value = typeCast(defaultValue, type, isWholeString)
+      } else if (value === undefined) {
+        if (setUndefined) {
+          if (isWholeString) {
+            value = undefined
+          } else {
+            value = ''
+          }
+        } else if (isNullAllowed) {
           value = null
         } else {
           value = match // Keep the placeholder intact
@@ -66,35 +87,54 @@ function typeCast(
   | unknown {
   if (value === undefined || value === null) return value
 
+  let valueToCheck = value
+  if (isString(value) && type !== 'str') {
+    valueToCheck = trim(value)
+  }
+
+  if (
+    valueToCheck instanceof Blob ||
+    valueToCheck instanceof ReadableStream ||
+    valueToCheck instanceof WritableStream ||
+    valueToCheck instanceof TransformStream
+  ) {
+    return valueToCheck
+  }
+
   let castValue: any
   switch (type) {
+    case 'ignore-empty-str':
+      return valueToCheck
+    case 'undefined':
+      return valueToCheck
     case 'null':
-      if (value === 'null' || value === null) return null
-      return isWholeString ? value : 'null'
+      if (valueToCheck === 'null' || valueToCheck === null) return null
+      return isWholeString ? valueToCheck : 'null'
     case 'int':
-      castValue = parseInt(value as string)
-      return isNaN(castValue) ? value : castValue
+      castValue = parseInt(valueToCheck as string)
+      return isNaN(castValue) ? valueToCheck : castValue
     case 'num':
-      castValue = parseFloat(value as string)
-      return isNaN(castValue) ? value : castValue
+      castValue = parseFloat(valueToCheck as string)
+      return isNaN(castValue) ? valueToCheck : castValue
     case 'str':
-      return String(value)
+      return toString(value)
     case 'bool':
-      if (value === 'true' || value === true) return true
-      if (value === 'false' || value === false) return false
-      return value // Return the original value if it's not 'true' or 'false'
+      if (valueToCheck === 'true' || valueToCheck === true) return true
+      if (valueToCheck === 'false' || valueToCheck === false) return false
+      return valueToCheck // Return the original value if it's not 'true' or 'false'
     case 'json':
       if (isWholeString) {
-        if (isPlainObject(value)) return value
+        if (isPlainObject(valueToCheck) || isArray(valueToCheck))
+          return valueToCheck
         try {
-          return JSON.parse(value as string)
+          return JSON.parse(valueToCheck as string)
         } catch (err) {
-          return value
+          return valueToCheck
         }
       }
-      return value
+      return valueToCheck
     case 'any':
-      return value
+      return valueToCheck
     default:
       throw new Error(`Unsupported type: ${type}`)
   }
