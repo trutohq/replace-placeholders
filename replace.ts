@@ -1,5 +1,5 @@
-import { get as getWild } from 'wild-wild-path'
 import { isArray, isPlainObject, isString, toString, trim } from 'lodash-es'
+import { get as getWild } from 'wild-wild-path'
 
 function replace(
   str = '',

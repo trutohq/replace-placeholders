@@ -101,6 +101,118 @@ You can also combine it with type casting
 console.log(replacePlaceholders('{{foo?:1:int}}', { foo: '1' }));  // Outputs: 1
 ````
 
+### Object Merging with `$truto_merge`
+
+The `$truto_merge` special key enables deep merging of objects from placeholder values into the parent object. This is useful for dynamically extending configuration objects or combining data from multiple sources.
+
+**Important:** The `$truto_merge` feature requires the `:json` type modifier to properly resolve object values.
+
+#### Basic Object Merge
+
+Merge a single object into the parent:
+
+```javascript
+const template = {
+  query: {
+    default_value: 'foo',
+    $truto_merge: '{{user_supplied_query:json}}'
+  }
+};
+
+const result = replacePlaceholders(template, {
+  user_supplied_query: { custom_value: 'bar' }
+});
+// Outputs: { query: { default_value: 'foo', custom_value: 'bar' } }
+```
+
+#### Deep Merge
+
+The merge is always deep, preserving nested properties:
+
+```javascript
+const template = {
+  config: {
+    defaults: {
+      timeout: 1000,
+      retries: 3
+    },
+    $truto_merge: '{{user_config:json}}'
+  }
+};
+
+const result = replacePlaceholders(template, {
+  user_config: {
+    defaults: {
+      retries: 5  // Overrides only this nested property
+    },
+    custom: true
+  }
+});
+// Outputs: {
+//   config: {
+//     defaults: { timeout: 1000, retries: 5 },
+//     custom: true
+//   }
+// }
+```
+
+#### Multiple Sources
+
+Merge multiple objects in sequence by providing an array. Later values override earlier ones:
+
+```javascript
+const template = {
+  settings: {
+    core: { enabled: true },
+    $truto_merge: ['{{base_settings:json}}', '{{user_settings:json}}']
+  }
+};
+
+const result = replacePlaceholders(template, {
+  base_settings: {
+    core: { version: '1.0' },
+    features: { a: true }
+  },
+  user_settings: {
+    core: { enabled: false },  // Overrides base
+    features: { b: true }
+  }
+});
+// Outputs: {
+//   settings: {
+//     core: { enabled: false, version: '1.0' },
+//     features: { a: true, b: true }
+//   }
+// }
+```
+
+#### Fallback Values
+
+Use the pipe operator `|` to specify fallback placeholders:
+
+```javascript
+const template = {
+  query: {
+    default_value: 'foo',
+    $truto_merge: '{{user_query:json|default_query:json}}'
+  }
+};
+
+const result = replacePlaceholders(template, {
+  default_query: { custom_value: 'bar' }
+});
+// Uses default_query since user_query is undefined
+// Outputs: { query: { default_value: 'foo', custom_value: 'bar' } }
+```
+
+#### Behavior Notes
+
+- The `$truto_merge` key is automatically removed from the output
+- Undefined or non-object placeholders are skipped (no error thrown)
+- Arrays in placeholders are not merged (only plain objects)
+- Empty objects have no effect on the merge
+- Works with nested `$truto_merge` keys for hierarchical merging
+
 ## License
 
 This project is licensed under the MIT License.
