@@ -15,10 +15,13 @@ export default function replacePlaceholders<T>(
   }
 
   if (isPlainObject(obj)) {
-    // First pass: replace all string placeholders
+    // First pass: replace all string placeholders and track if $truto_merge exists
+    let hasMergeKey = false
     const replaced = traverse(obj).map(function (value) {
       if (this.circular) {
         this.remove()
+      } else if (isPlainObject(value) && '$truto_merge' in value) {
+        hasMergeKey = true
       } else if (isString(value)) {
         this.update(replace(value, context))
       } else if (isArrayBuffer(value) || value instanceof Blob) {
@@ -28,7 +31,11 @@ export default function replacePlaceholders<T>(
       }
     })
 
-    // Second pass: handle $truto_merge
+    // Second pass: handle $truto_merge (only if needed)
+    if (!hasMergeKey) {
+      return replaced as T
+    }
+
     return traverse(replaced).map(function (value) {
       if (this.circular) {
         this.remove()
