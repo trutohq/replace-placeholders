@@ -73,6 +73,26 @@ function replace(
   return result
 }
 
+function convertStringBooleans(value: unknown): unknown {
+  if (isString(value)) {
+    if (value === 'true') return true
+    if (value === 'false') return false
+  }
+  if (isPlainObject(value)) {
+    const result: Record<string, unknown> = {}
+    const obj = value as Record<string, unknown>
+    for (const [key, val] of Object.entries(obj)) {
+      result[key] = convertStringBooleans(val)
+    }
+    return result
+  }
+  if (isArray(value)) {
+    const arr = value as unknown[]
+    return arr.map(convertStringBooleans)
+  }
+  return value
+}
+
 function typeCast(
   value: unknown,
   type: string,
@@ -121,6 +141,17 @@ function typeCast(
     case 'bool':
       if (valueToCheck === 'true' || valueToCheck === true) return true
       if (valueToCheck === 'false' || valueToCheck === false) return false
+      if (isPlainObject(valueToCheck)) {
+        const result: Record<string, unknown> = {}
+        for (const [key, val] of Object.entries(valueToCheck)) {
+          result[key] = convertStringBooleans(val)
+        }
+        return result
+      }
+      if (isArray(valueToCheck)) {
+        const arr = valueToCheck as unknown[]
+        return arr.map(convertStringBooleans)
+      }
       return valueToCheck // Return the original value if it's not 'true' or 'false'
     case 'json':
       if (isWholeString) {

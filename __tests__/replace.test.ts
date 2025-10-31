@@ -127,6 +127,83 @@ describe('replace', () => {
           'foo true bar'
         )
       })
+      it('should recursively convert string booleans in objects', () => {
+        const context = { config: { enabled: 'true', debug: 'false' } }
+        expect(replace('{{config:bool}}', context)).toEqual({
+          enabled: true,
+          debug: false,
+        })
+      })
+
+      it('should recursively convert string booleans in nested objects', () => {
+        const context = {
+          settings: {
+            user: { active: 'true' },
+            features: { login: 'false', payments: { enabled: 'true' } },
+          },
+        }
+        expect(replace('{{settings:bool}}', context)).toEqual({
+          user: { active: true },
+          features: { login: false, payments: { enabled: true } },
+        })
+      })
+
+      it('should recursively convert string booleans in arrays', () => {
+        const context = { flags: ['active', 'inactive', 'true'] }
+        expect(replace('{{flags:bool}}', context)).toEqual(['active', 'inactive', true]);
+      })
+
+      it('should recursively convert string booleans in mixed nested arrays and objects', () => {
+        const context = {
+          data: [
+            { id: 1, flag: 'true' },
+            { id: 2, nested: { subFlag: 'false' } },
+            'pending',
+          ],
+        }
+        expect(replace('{{data:bool}}', context)).toEqual([
+          { id: 1, flag: true },
+          { id: 2, nested: { subFlag: false } },
+          'pending',
+        ])
+      })
+
+      it('should leave non-boolean strings unchanged in objects and arrays', () => {
+        const context = { config: { status: 'active', flag: 'true' } }
+        expect(replace('{{config:bool}}', context)).toEqual({
+          status: 'active',
+          flag: true,
+        })
+
+        const arrayContext = { items: ['yes', 'false', 42] }
+        expect(replace('{{items:bool}}', arrayContext)).toEqual(['yes', false, 42]);
+      })
+
+      it('should handle empty objects and arrays without errors', () => {
+        expect(replace('{{emptyObj:bool}}', { emptyObj: {} })).toEqual({})
+        expect(replace('{{emptyArr:bool}}', { emptyArr: [] })).toEqual([])
+      })
+
+      it('should preserve other types like numbers and null in nested structures', () => {
+        const context = {
+          mixed: {
+            count: '5',
+            flag: 'true',
+            opts: { value: 42, nullVal: null },
+          },
+        }
+        expect(replace('{{mixed:bool}}', context)).toEqual({
+          count: '5',
+          flag: true,
+          opts: { value: 42, nullVal: null },
+        })
+      })
+      it('should work with bool casting in partial string replacements', () => {
+        const context = { flags: { enable: 'true' } }
+        expect(replace('Enabled: {{flags.enable:bool}}', context)).toBe(
+          'Enabled: true'
+        )
+      })
     })
     describe('json', () => {
       it('should cast a string to json', () => {
