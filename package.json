@@ -5,7 +5,7 @@
   "repository": "https://github.com/trutohq/replace-placeholders.git",
   "dependencies": {
     "deepmerge": "4.3.1",
-    "lodash-es": "4.17.21",
+    "lodash-es": "4.17.23",
     "traverse": "0.6.7",
     "wild-wild-path": "4.0.0"
   },
