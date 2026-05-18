@@ -213,6 +213,123 @@ const result = replacePlaceholders(template, {
 - Empty objects have no effect on the merge
 - Works with nested `$truto_merge` keys for hierarchical merging
 
+## JSONata Expression Placeholders (Async API)
+
+For conditional logic and computed values that can't be expressed as path lookups, use the `{{exp: <expression>}}` syntax with the async API.
+
+### Installation
+
+`jsonata` is included as a dependency — no extra install needed.
+
+### Basic Usage
+
+```javascript
+import { replacePlaceholdersAsync } from '@truto/replace-placeholders';
+
+// Ternary: returns the string "yes"
+const result = await replacePlaceholdersAsync(
+  '{{exp: active ? "yes" : "no"}}',
+  { active: true }
+);
+// Outputs: 'yes'
+```
+
+### Whole-string expression returns raw typed value
+
+When the entire string is a single `{{exp: ...}}` placeholder, the raw evaluated value is returned — preserving type.
+
+```javascript
+// Returns number 100, not the string "100"
+await replacePlaceholdersAsync(
+  '{{exp: query.limit ? query.limit : 100}}',
+  { query: {} }
+);
+// Outputs: 100
+
+// Returns boolean true
+await replacePlaceholdersAsync('{{exp: count > 0}}', { count: 5 });
+// Outputs: true
+```
+
+### Embedded expressions stringify the result
+
+When `{{exp: ...}}` appears inside a larger string, the result is stringified before substitution.
+
+```javascript
+await replacePlaceholdersAsync(
+  'status={{exp: active ? "yes" : "no"}}&page={{page}}',
+  { active: true, page: 2 }
+);
+// Outputs: 'status=yes&page=2'
+```
+
+### Objects and arrays
+
+Expressions are evaluated recursively throughout the entire object or array.
+
+```javascript
+await replacePlaceholdersAsync(
+  { limit: '{{exp: query.limit ? query.limit : 100}}', name: '{{user}}' },
+  { query: {}, user: 'Alice' }
+);
+// Outputs: { limit: 100, name: 'Alice' }
+```
+
+### Mixed with legacy placeholders
+
+`{{exp: ...}}` and regular `{{path}}` placeholders can coexist in the same string or object.
+
+```javascript
+await replacePlaceholdersAsync(
+  { id: '{{id}}', active: '{{exp: flag ? "yes" : "no"}}' },
+  { id: '123', flag: false }
+);
+// Outputs: { id: '123', active: 'no' }
+```
+
+### $truto_merge with expressions
+
+The `$truto_merge` key works with JSONata expressions that return objects.
+
+```javascript
+await replacePlaceholdersAsync(
+  { query: { default_value: 'foo', $truto_merge: '{{exp: extraQuery}}' } },
+  { extraQuery: { custom_value: 'bar' } }
+);
+// Outputs: { query: { default_value: 'foo', custom_value: 'bar' } }
+```
+
+### Custom evaluator
+
+Provide your own evaluator (e.g. to use a different JSONata build or add custom functions):
+
+```javascript
+import { replacePlaceholdersAsync } from '@truto/replace-placeholders';
+
+await replacePlaceholdersAsync(obj, context, {
+  evaluateExpression: async (expression, context) => {
+    const expr = myJsonata(expression);
+    return expr.evaluate(context);
+  }
+});
+```
+
+### Sync API leaves `{{exp: ...}}` unchanged
+
+The synchronous `replacePlaceholders` function silently passes through `{{exp: ...}}` placeholders — it neither evaluates them nor crashes. This makes the two APIs safe to mix at different call sites during a staged migration.
+
+```javascript
+import replacePlaceholders from '@truto/replace-placeholders';
+
+// Returns the placeholder string unchanged — no evaluation
+replacePlaceholders('{{exp: active ? "yes" : "no"}}', { active: true });
+// Outputs: '{{exp: active ? "yes" : "no"}}'
+```
+
+### Invalid expressions throw
+
+An invalid JSONata expression causes `replacePlaceholdersAsync` to throw. Errors propagate from the evaluator as-is.
+
 ## License
 
 This project is licensed under the MIT License.

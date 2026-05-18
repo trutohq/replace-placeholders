@@ -12,7 +12,7 @@ function replace(
   | null
   | undefined
   | unknown {
-  const regex = /{{([\w-./|:?\s]+)}}/gi
+  const regex = /{{(?!exp:)([\w-./|:?\s]+)}}/gi
   const typeSplitRegex = /:(?=[\w\s]+)/gm
   const matches = str.match(regex)
   let result: string | any = str
