@@ -66,11 +66,11 @@
     "test": "vitest"
   },
   "resolutions": {
-    "postcss": "npm:postcss@8.5.12",
+    "postcss": "npm:postcss@8.5.18",
     "esbuild": "npm:esbuild@0.27.2",
     "vite": "npm:vite@6.4.3",
-    "js-yaml": "npm:js-yaml@4.2.0",
+    "js-yaml": "npm:js-yaml@4.3.0",
     "base-x": "npm:base-x@5.0.1",
-    "brace-expansion": "npm:brace-expansion@1.1.12"
+    "brace-expansion": "npm:brace-expansion@1.1.16"
   }
 }
