@@ -56,23 +56,44 @@ export function createBuiltins(now: Date = new Date(Date.now())): Builtins {
   }
 }
 
+/** The names `createBuiltins` answers for. */
+export const BUILTIN_NAMES = [
+  '$uuid',
+  '$uuid_v7',
+  '$now',
+  '$now_unix',
+  '$now_unix_ms',
+  '$now_http',
+  '$today',
+  '$random_hex',
+]
+
 /**
- * Whether every `$` in a placeholder starts one of its paths. Before `$` was
- * allowed, a placeholder with a `$` anywhere was not matched at all and stayed
- * as written; one with a `$` elsewhere (`{{price$}}`, `{{a?:$5}}`) still does.
+ * Whether a placeholder (the text between `{{` and `}}`) may be filled.
+ * Before `$` was allowed, a placeholder with a `$` anywhere was not matched at
+ * all and stayed as written. It still does unless each `$` starts a path, in
+ * the part before the first `?:`, that names a built-in. So `{{price$}}`,
+ * `{{a?:$5}}`, `{{a?:b?:$5}}` and `{{$typo:null}}` stay as written, as before.
  */
-export function dollarOnlyStartsPaths(
-  matchStr: string,
-  defaultStr: string | undefined
+export function mayFill(
+  inner: string,
+  pathOf: (part: string) => string
 ): boolean {
-  if (defaultStr !== undefined && defaultStr.includes('$')) {
+  const defaultAt = inner.indexOf('?:')
+  if (defaultAt !== -1 && inner.indexOf('$', defaultAt) !== -1) {
     return false
   }
-  return matchStr.split('|').every(part => {
+  const head = defaultAt === -1 ? inner : inner.slice(0, defaultAt)
+  return head.split('|').every(part => {
     const first = part.indexOf('$')
+    if (first === -1) {
+      return true
+    }
+    const path = pathOf(part)
     return (
-      first === -1 ||
-      (part.trimStart().startsWith('$') && part.indexOf('$', first + 1) === -1)
+      part.trimStart().startsWith('$') &&
+      part.indexOf('$', first + 1) === -1 &&
+      BUILTIN_NAMES.includes(path)
     )
   })
 }

@@ -108,7 +108,7 @@ A placeholder that starts with `$` names a built-in value instead of a path into
 | Placeholder | Example output | Notes |
 | --- | --- | --- |
 | `{{$uuid}}` | `3f2c9a1e-5b7d-4e2a-9c1f-0d8e7b6a5c4d` | Version 4 UUID, new on every use |
-| `{{$uuid_v7}}` | `019ac54e-8a3b-7f12-9c4d-5e6f7a8b9c0d` | Version 7 UUID (sorts by time), new on every use |
+| `{{$uuid_v7}}` | `01a21c80-c24b-7f12-9c4d-5e6f7a8b9c0d` | Version 7 UUID (sorts by time), new on every use |
 | `{{$now}}` | `2026-11-27T10:15:30.123Z` | ISO 8601, UTC |
 | `{{$now_unix}}` | `1795774530` | Seconds since 1970-01-01 UTC |
 | `{{$now_unix_ms}}` | `1795774530123` | Milliseconds since 1970-01-01 UTC |
@@ -124,8 +124,8 @@ replacePlaceholders({ 'X-Request-Id': '{{$uuid}}', 'X-Timestamp': '{{$now_unix}}
 - Every time value in one `replacePlaceholders` call comes from one clock reading, so they agree with each other.
 - Values are strings. Type casting works as usual: `{{$now_unix:int}}` gives a number.
 - Fallbacks and defaults work: `{{request_id|$uuid}}` uses `request_id` when it is set, else a new UUID.
-- An unknown name (`{{$uudi}}`) is left as written, like a missing path.
-- A placeholder with `$` anywhere other than the start of a path (`{{price$}}`) is left as written, as before built-ins existed.
+- A placeholder that names an unknown built-in (`{{$uudi}}`, `{{$typo:null}}`, `{{$nope?:x}}`) or has `$` anywhere other than the start of a path (`{{price$}}`, `{{a?:$5}}`) is left as written, as before built-ins existed. Its `?:` default, `:null` and `:undefined` are not applied.
+- `$uuid`, `$uuid_v7` and `$random_hex` use the global `crypto` (Web Crypto). It is there in Cloudflare Workers, browsers and Node.js 19 and later. In Node.js 18 these three throw a `ReferenceError`.
 
 ### Object Merging with `$truto_merge`
 

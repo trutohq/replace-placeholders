@@ -1,6 +1,6 @@
 import { isArray, isPlainObject, isString, toString, trim } from 'lodash-es'
 import { get as getWild } from 'wild-wild-path'
-import { Builtins, createBuiltins, dollarOnlyStartsPaths } from './builtins'
+import { Builtins, createBuiltins, mayFill } from './builtins'
 
 function replace(
   str = '',
@@ -21,10 +21,11 @@ function replace(
 
   if (matches) {
     matches.forEach(match => {
-      const [matchStr, defaultStr] = match.slice(2, -2).split('?:')
-      if (!dollarOnlyStartsPaths(matchStr, defaultStr)) {
+      const inner = match.slice(2, -2)
+      if (!mayFill(inner, part => part.split(typeSplitRegex)[0].trim())) {
         return
       }
+      const [matchStr, defaultStr] = inner.split('?:')
       const parts = matchStr.split('|')
       const isNullAllowed = parts.some(part => part.includes(':null'))
       const ignoreEmptyString = parts.some(part =>

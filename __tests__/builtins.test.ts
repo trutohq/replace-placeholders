@@ -56,18 +56,24 @@ describe('built-in $ values', () => {
       'given'
     )
     expect(replace('{{request_id|$uuid}}', {})).toMatch(UUID_V4)
-    expect(replace('{{$nope?:fallback}}')).toBe('fallback')
+    expect(replace('{{missing|$today?:fallback}}', {})).toBe('2026-11-27')
   })
 
-  it('keeps an unknown built-in as written, like a missing path', () => {
+  it('keeps an unknown built-in as written, whatever its modifiers, as before', () => {
     expect(replace('{{$uudi}}')).toBe('{{$uudi}}')
     expect(replace('{{$}}')).toBe('{{$}}')
+    expect(replace('{{$typo:null}}')).toBe('{{$typo:null}}')
+    expect(replace('{{$1:undefined}}')).toBe('{{$1:undefined}}')
+    expect(replace('{{$nope?:x}}')).toBe('{{$nope?:x}}')
+    expect(replace('{{a|$nope}}', { a: 'v' })).toBe('{{a|$nope}}')
   })
 
   it('leaves a placeholder with $ anywhere but the start of a path as written, as before', () => {
     const context = { price$: 'x', a: 'y' }
     expect(replace('{{price$}}', context)).toBe('{{price$}}')
     expect(replace('{{a?:$5}}', {})).toBe('{{a?:$5}}')
+    expect(replace('{{a?:b?:$5}}', { a: 'v' })).toBe('{{a?:b?:$5}}')
+    expect(replace('{{a?:b?:x$}}', { a: 'v' })).toBe('{{a?:b?:x$}}')
     expect(replace('{{$uuid$}}')).toBe('{{$uuid$}}')
     expect(replace('{{foo:undefined}} {{x$:undefined}}', {})).toBe(
       ' {{x$:undefined}}'
