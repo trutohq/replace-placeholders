@@ -1,17 +1,27 @@
 import deepmerge from 'deepmerge'
 import { get, isArray, isArrayBuffer, isPlainObject, isString } from 'lodash-es'
 import traverse from 'traverse'
+import { Builtins, createBuiltins } from './builtins'
 import replace from './replace'
 export default function replacePlaceholders<T>(
   obj: T extends string | string[] | Record<string, unknown> ? T : never,
   context: Record<string, unknown>
 ): T {
+  // One clock reading for the whole call (see `createBuiltins`).
+  return fill(obj, context, createBuiltins())
+}
+
+function fill<T>(
+  obj: T,
+  context: Record<string, unknown>,
+  builtins: Builtins
+): T {
   if (isString(obj)) {
-    return replace(obj, context) as T
+    return replace(obj, context, builtins) as T
   }
 
   if (isArray(obj)) {
-    return obj.map(item => replacePlaceholders(item, context)) as T
+    return obj.map(item => fill(item, context, builtins)) as T
   }
 
   if (isPlainObject(obj)) {
@@ -23,7 +33,7 @@ export default function replacePlaceholders<T>(
       } else if (isPlainObject(value) && '$truto_merge' in value) {
         hasMergeKey = true
       } else if (isString(value)) {
-        this.update(replace(value, context))
+        this.update(replace(value, context, builtins))
       } else if (isArrayBuffer(value) || value instanceof Blob) {
         const val = get(obj, this.path)
         this.update(val)

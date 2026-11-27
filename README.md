@@ -101,6 +101,32 @@ You can also combine it with type casting
 console.log(replacePlaceholders('{{foo?:1:int}}', { foo: '1' }));  // Outputs: 1
 ````
 
+### Built-in values
+
+A placeholder that starts with `$` names a built-in value instead of a path into the data object. The data object is never read for these names.
+
+| Placeholder | Example output | Notes |
+| --- | --- | --- |
+| `{{$uuid}}` | `3f2c9a1e-5b7d-4e2a-9c1f-0d8e7b6a5c4d` | Version 4 UUID, new on every use |
+| `{{$uuid_v7}}` | `019ac54e-8a3b-7f12-9c4d-5e6f7a8b9c0d` | Version 7 UUID (sorts by time), new on every use |
+| `{{$now}}` | `2026-11-27T10:15:30.123Z` | ISO 8601, UTC |
+| `{{$now_unix}}` | `1795774530` | Seconds since 1970-01-01 UTC |
+| `{{$now_unix_ms}}` | `1795774530123` | Milliseconds since 1970-01-01 UTC |
+| `{{$now_http}}` | `Fri, 27 Nov 2026 10:15:30 GMT` | HTTP date (for a `Date` header) |
+| `{{$today}}` | `2026-11-27` | UTC date |
+| `{{$random_hex}}` | `9f86d081884c7d659a2feaa0c55ad015` | 16 random bytes as hex, new on every use |
+
+```javascript
+replacePlaceholders({ 'X-Request-Id': '{{$uuid}}', 'X-Timestamp': '{{$now_unix}}' }, {})
+// { 'X-Request-Id': '3f2c9a1e-…', 'X-Timestamp': '1795774530' }
+```
+
+- Every time value in one `replacePlaceholders` call comes from one clock reading, so they agree with each other.
+- Values are strings. Type casting works as usual: `{{$now_unix:int}}` gives a number.
+- Fallbacks and defaults work: `{{request_id|$uuid}}` uses `request_id` when it is set, else a new UUID.
+- An unknown name (`{{$uudi}}`) is left as written, like a missing path.
+- A placeholder with `$` anywhere other than the start of a path (`{{price$}}`) is left as written, as before built-ins existed.
+
 ### Object Merging with `$truto_merge`
 
 The `$truto_merge` special key enables deep merging of objects from placeholder values into the parent object. This is useful for dynamically extending configuration objects or combining data from multiple sources.

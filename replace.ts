@@ -1,9 +1,11 @@
 import { isArray, isPlainObject, isString, toString, trim } from 'lodash-es'
 import { get as getWild } from 'wild-wild-path'
+import { Builtins, createBuiltins, dollarOnlyStartsPaths } from './builtins'
 
 function replace(
   str = '',
-  obj: object = {}
+  obj: object = {},
+  builtins: Builtins = createBuiltins()
 ):
   | string
   | number
@@ -12,7 +14,7 @@ function replace(
   | null
   | undefined
   | unknown {
-  const regex = /{{([\w-./|:?\s]+)}}/gi
+  const regex = /{{([\w-./|:?\s$]+)}}/gi
   const typeSplitRegex = /:(?=[\w\s]+)/gm
   const matches = str.match(regex)
   let result: string | any = str
@@ -20,6 +22,9 @@ function replace(
   if (matches) {
     matches.forEach(match => {
       const [matchStr, defaultStr] = match.slice(2, -2).split('?:')
+      if (!dollarOnlyStartsPaths(matchStr, defaultStr)) {
+        return
+      }
       const parts = matchStr.split('|')
       const isNullAllowed = parts.some(part => part.includes(':null'))
       const ignoreEmptyString = parts.some(part =>
@@ -34,7 +39,10 @@ function replace(
         const [path, ...typeParts] = part.split(typeSplitRegex)
         const type: string = (typeParts[0] || 'str').trim()
 
-        const tempValue = getWild(obj, path.trim())
+        const trimmedPath = path.trim()
+        const tempValue = trimmedPath.startsWith('$')
+          ? builtins(trimmedPath)
+          : getWild(obj, trimmedPath)
         if (tempValue === '' && ignoreEmptyString) {
           continue
         }
